@@ -1,43 +1,124 @@
 import './employees-list-item.css'
 
+const salaryFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0
+})
 
-const EmployeesListItem = (props) => {
-    const {name, salary, onDelete, onToggleProp, increase, rise} = props 
-    let classNames = "list-group-item d-flex justify-content-between" 
-    if(increase) {
-        classNames += ' increase'
-    }
-    let classLike = "list-group-item-label" 
-    if(rise) {
-        classNames += ' like'
-    }
+const getInitials = (name) =>
+  name
+    .split(' ')
+    .map((chunk) => chunk[0])
+    .filter(Boolean)
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
 
-    return (
-        <li className={classNames}>
-            <span 
-                className={classLike}
-                onClick={onToggleProp}
-                data-toggle="rise">
-                {name}
-            </span>
-            <input type="text" className="list-group-item-input" defaultValue={salary + '$' }/>
-            <div className='d-flex justify-content-center align-items-center'>
-                <button type="button"
-                    className="btn-cookie btn-sm "
-                    onClick={onToggleProp}
-                    data-toggle="increase">
-                    <i className="fas fa-cookie"></i>
-                </button>
+const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange }) => {
+  const {
+    name,
+    role,
+    department,
+    location,
+    salary,
+    increase,
+    rise,
+    remote,
+    hiredAt,
+    impactScore,
+    avatarColor
+  } = employee
 
-                <button type="button"
-                        className="btn-trash btn-sm "
-                        onClick={onDelete} >
-                    <i className="fas fa-trash"></i>
-                </button>
-                <i className="fas fa-star"></i>
-            </div>
-        </li>
-    )
+  const initials = getInitials(name)
+  const formattedSalary = salaryFormatter.format(salary)
+  const tenure = Math.max(
+    0,
+    Math.floor((new Date().getTime() - new Date(hiredAt).getTime()) / (1000 * 60 * 60 * 24 * 30))
+  )
+
+  return (
+    <article className='employee-card'>
+      <header className='employee-card__header'>
+        <div className='employee-card__avatar' style={{ backgroundColor: avatarColor }}>
+          {initials}
+        </div>
+        <div className='employee-card__meta'>
+          <div className='employee-card__primary'>
+            <h3>{name}</h3>
+            {rise && <span className='employee-card__chip employee-card__chip--rise'>Rise track</span>}
+            {increase && (
+              <span className='employee-card__chip employee-card__chip--increase'>Bonus</span>
+            )}
+          </div>
+          <div className='employee-card__secondary'>
+            <span>{role}</span>
+            <span>|</span>
+            <span>{department}</span>
+            <span>|</span>
+            <span>{location}</span>
+            {remote && (
+              <span className='employee-card__remote' title='Remote friendly'>
+                Remote
+              </span>
+            )}
+          </div>
+        </div>
+        <button type='button' className='employee-card__delete' onClick={onDelete}>
+          <span className='sr-only'>Remove teammate</span>
+          X
+        </button>
+      </header>
+
+      <section className='employee-card__body'>
+        <div className='employee-card__metric'>
+          <span className='employee-card__metric-label'>Impact score</span>
+          <span className='employee-card__metric-value'>{impactScore}</span>
+          <div className='employee-card__meter'>
+            <div className='employee-card__meter-fill' style={{ width: `${impactScore}%` }} />
+          </div>
+        </div>
+
+        <div className='employee-card__metric'>
+          <span className='employee-card__metric-label'>Tenure</span>
+          <span className='employee-card__metric-value'>
+            {tenure >= 12 ? `${(tenure / 12).toFixed(1)} yrs` : `${tenure} mo`}
+          </span>
+          <span className='employee-card__metric-hint'>Hired {new Date(hiredAt).toLocaleDateString()}</span>
+        </div>
+
+        <div className='employee-card__metric employee-card__metric--salary'>
+          <span className='employee-card__metric-label'>Salary</span>
+          <div className='employee-card__salary-input'>
+            <input
+              type='number'
+              min='0'
+              step='1000'
+              value={salary}
+              onChange={(event) => onSalaryChange(event.target.value)}
+            />
+            <span>{formattedSalary}</span>
+          </div>
+          <div className='employee-card__salary-actions'>
+            <button
+              type='button'
+              className={increase ? 'is-active' : ''}
+              onClick={() => onToggleProp('increase')}
+            >
+              Bonus ready
+            </button>
+            <button
+              type='button'
+              className={rise ? 'is-active' : ''}
+              onClick={() => onToggleProp('rise')}
+            >
+              Promotion track
+            </button>
+          </div>
+        </div>
+      </section>
+    </article>
+  )
 }
 
 export default EmployeesListItem

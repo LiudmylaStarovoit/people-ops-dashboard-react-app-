@@ -1,30 +1,45 @@
-﻿import './app-filter.css'
+import './app-filter.css'
 
-// Dynamically render filter buttons with active styling
-const AppFilter = ({ filter, onFilterSelect }) => {
-  const buttonsData = [
-    { name: 'all', label: 'All employees' },
-    { name: 'rise', label: 'Promotion' },
-    { name: 'salary', label: 'Salary more than 1000$' }
-  ]
+const filterButtons = [
+  { name: 'all', label: 'All team members' },
+  { name: 'rise', label: 'Promotion ready' },
+  { name: 'increase', label: 'Bonus spotlight' },
+  { name: 'remote', label: 'Remote friendly' },
+  { name: 'impact', label: 'Impact 90+' }
+]
 
+const AppFilter = ({ filter, department, departments, onFilterSelect, onDepartmentChange }) => {
   return (
-    <div className='btn-group'>
-      {buttonsData.map(({ name, label }) => {
-        const active = filter === name
-        const clazz = active ? 'btn btn-light' : 'btn btn-outline-light'
-
-        return (
+    <div className='app-filter'>
+      <div className='app-filter__segmented'>
+        {filterButtons.map(({ name, label }) => (
           <button
             key={name}
-            className={clazz}
             type='button'
+            className={filter === name ? 'is-active' : ''}
             onClick={() => onFilterSelect(name)}
           >
-            {label}
+            <span>{label}</span>
           </button>
-        )
-      })}
+        ))}
+      </div>
+
+      <div className='app-filter__department'>
+        <label htmlFor='department-select'>Focus department</label>
+        <div className='app-filter__select-wrapper'>
+          <select
+            id='department-select'
+            value={department}
+            onChange={(event) => onDepartmentChange(event.target.value)}
+          >
+            {departments.map((item) => (
+              <option key={item} value={item}>
+                {item === 'all' ? 'All departments' : item}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </div>
   )
 }

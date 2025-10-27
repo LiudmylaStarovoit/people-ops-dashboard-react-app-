@@ -1,5 +1,32 @@
 .app {
-    margin: 0 auto;
-    max-width: 1000px;
+  position: relative;
+  max-width: 1160px;
+  margin: 0 auto 80px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.app::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 5% 10%, rgba(99, 102, 241, 0.18), transparent 55%),
+    radial-gradient(circle at 95% 15%, rgba(236, 72, 153, 0.15), transparent 60%),
+    radial-gradient(circle at 80% 75%, rgba(45, 212, 191, 0.12), transparent 55%);
+  z-index: -2;
+  pointer-events: none;
+}
+
+.app__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+@media (max-width: 720px) {
+  .app {
+    gap: 22px;
   }
-  
+}

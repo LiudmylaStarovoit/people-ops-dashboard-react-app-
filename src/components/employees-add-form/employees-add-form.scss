@@ -1,16 +1,187 @@
-.add-form {
-    margin-top: 20px;
-    input {
-        width: 350px;
-        margin-right: 20px;
-    }
-}
-
 .app-add-form {
-    margin-top: 30px;
-    padding: 25px;
-    background-color: #3d5a80;
-    border-radius: 4px;
-    box-shadow: 15px 15px 30px rgba(0,0,0, .15);
-    color: #fff;
+  margin-top: 36px;
+  padding: 42px 48px;
+  border-radius: 28px;
+  background: rgba(11, 15, 25, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: 0 28px 52px rgba(15, 23, 42, 0.38);
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 18px;
+
+    h3 {
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 8px 0 0;
+      max-width: 480px;
+      color: rgba(148, 163, 184, 0.85);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+  }
+
+  &__advanced {
+    align-self: flex-start;
+    border-radius: 14px;
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    background: rgba(129, 140, 248, 0.08);
+    color: rgba(226, 232, 240, 0.85);
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &.is-active,
+    &:hover {
+      background: linear-gradient(120deg, #818cf8, #60a5fa);
+      border-color: transparent;
+      color: #0f172a;
+      box-shadow: 0 16px 28px rgba(99, 102, 241, 0.25);
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  &__advanced-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 18px;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    span {
+      color: rgba(148, 163, 184, 0.75);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    input,
+    textarea {
+      border-radius: 16px;
+      border: 1px solid rgba(99, 102, 241, 0.28);
+      background: rgba(15, 23, 42, 0.75);
+      padding: 14px 18px;
+      color: #f8fafc;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      resize: vertical;
+
+      &::placeholder {
+        color: rgba(148, 163, 184, 0.6);
+      }
+
+      &:focus {
+        border-color: rgba(129, 140, 248, 0.8);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+      }
+    }
+  }
+
+  &__field--note textarea {
+    min-height: 120px;
+  }
+
+  &__toggles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(148, 163, 184, 0.08);
+      padding: 12px 20px;
+      color: rgba(226, 232, 240, 0.9);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        border-color: rgba(129, 140, 248, 0.75);
+        color: #f8fafc;
+      }
+
+      &.is-active {
+        background: linear-gradient(120deg, #34d399, #22d3ee);
+        border-color: transparent;
+        color: #0f172a;
+        box-shadow: 0 18px 26px rgba(45, 212, 191, 0.35);
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+
+    button {
+      border-radius: 16px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 14px 24px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+      &:first-of-type {
+        background: linear-gradient(120deg, #818cf8, #a855f7);
+        color: #f8fafc;
+        box-shadow: 0 20px 30px rgba(129, 140, 248, 0.25);
+      }
+
+      &:first-of-type:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 26px 42px rgba(129, 140, 248, 0.32);
+      }
+    }
+
+    .app-add-form__secondary {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      color: rgba(226, 232, 240, 0.85);
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: 32px 28px;
+  }
 }
