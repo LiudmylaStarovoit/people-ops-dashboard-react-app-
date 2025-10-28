@@ -1,12 +1,12 @@
 @keyframes glowPulse {
   0% {
-    box-shadow: 0 0 0 rgba(79, 70, 229, 0.4);
+    box-shadow: 0 0 0 rgba(99, 102, 241, 0.4);
   }
   70% {
-    box-shadow: 0 0 40px rgba(79, 70, 229, 0.12);
+    box-shadow: 0 0 40px rgba(99, 102, 241, 0.12);
   }
   100% {
-    box-shadow: 0 0 0 rgba(79, 70, 229, 0.4);
+    box-shadow: 0 0 0 rgba(99, 102, 241, 0.4);
   }
 }
 
@@ -15,11 +15,12 @@
   flex-wrap: wrap;
   gap: 24px;
   padding: 28px;
-  background: rgba(11, 15, 25, 0.88);
-  border: 1px solid rgba(148, 163, 184, 0.08);
+  background: var(--surface-section);
+  border: 1px solid var(--border-subtle);
   border-radius: 24px;
   backdrop-filter: blur(18px);
-  box-shadow: 0 24px 48px rgba(14, 23, 42, 0.35);
+  box-shadow: var(--shadow-elevated);
+  transition: background 0.4s ease;
 }
 
 .app-filter__segmented {
@@ -33,9 +34,9 @@
   position: relative;
   flex: 1;
   border-radius: 999px;
-  border: 1px solid rgba(99, 102, 241, 0.35);
-  background: rgba(255, 255, 255, 0.02);
-  color: rgba(226, 232, 240, 0.9);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 45%, transparent);
+  background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -54,15 +55,15 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(129, 140, 248, 0.6), rgba(56, 189, 248, 0.55));
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   opacity: 0;
   transition: opacity 0.3s ease;
   z-index: 0;
 }
 
 .app-filter__segmented button:hover {
-  border-color: rgba(129, 140, 248, 0.75);
-  color: #f8fafc;
+  border-color: color-mix(in srgb, var(--accent-primary) 75%, transparent);
+  color: var(--text-primary);
 }
 
 .app-filter__segmented button:hover::before {
@@ -72,7 +73,7 @@
 .app-filter__segmented button.is-active {
   color: #0f172a;
   border-color: transparent;
-  background: linear-gradient(135deg, #818cf8, #60a5fa);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   box-shadow: 0 18px 28px rgba(99, 102, 241, 0.25);
   animation: glowPulse 2.4s ease-in-out infinite;
 }
@@ -85,7 +86,7 @@
 }
 
 .app-filter__department label {
-  color: rgba(148, 163, 184, 0.88);
+  color: var(--text-muted);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -95,8 +96,8 @@
 .app-filter__select-wrapper {
   position: relative;
   border-radius: 16px;
-  border: 1px solid rgba(99, 102, 241, 0.3);
-  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid color-mix(in srgb, var(--accent-primary) 40%, transparent);
+  background: var(--surface-input);
   overflow: hidden;
 }
 
@@ -107,8 +108,8 @@
   right: 16px;
   width: 10px;
   height: 10px;
-  border-bottom: 2px solid #94a3b8;
-  border-right: 2px solid #94a3b8;
+  border-bottom: 2px solid var(--text-soft);
+  border-right: 2px solid var(--text-soft);
   transform: translateY(-70%) rotate(45deg);
   pointer-events: none;
   transition: transform 0.25s ease;
@@ -119,7 +120,7 @@
   width: 100%;
   padding: 14px 18px;
   background: transparent;
-  color: #e2e8f0;
+  color: var(--text-primary);
   font-size: 15px;
   font-weight: 500;
   border: none;
@@ -127,7 +128,7 @@
 }
 
 .app-filter__select-wrapper select:focus {
-  box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.6);
+  box-shadow: inset 0 0 0 2px rgba(99, 102, 241, 0.35);
 }
 
 .app-filter__select-wrapper:focus-within::after {

@@ -5,7 +5,8 @@ const filterButtons = [
   { name: 'rise', label: 'Promotion ready' },
   { name: 'increase', label: 'Bonus spotlight' },
   { name: 'remote', label: 'Remote friendly' },
-  { name: 'impact', label: 'Impact 90+' }
+  { name: 'impact', label: 'Impact 90+' },
+  { name: 'archived', label: 'Archived' }
 ]
 
 const AppFilter = ({ filter, department, departments, onFilterSelect, onDepartmentChange }) => {

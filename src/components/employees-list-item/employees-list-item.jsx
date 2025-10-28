@@ -15,7 +15,14 @@ const getInitials = (name) =>
     .slice(0, 2)
     .toUpperCase()
 
-const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange }) => {
+const EmployeesListItem = ({
+  employee,
+  onDelete,
+  onToggleProp,
+  onSalaryChange,
+  onSelect,
+  isSelected
+}) => {
   const {
     name,
     role,
@@ -27,7 +34,8 @@ const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange })
     remote,
     hiredAt,
     impactScore,
-    avatarColor
+    avatarColor,
+    archived
   } = employee
 
   const initials = getInitials(name)
@@ -37,8 +45,41 @@ const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange })
     Math.floor((new Date().getTime() - new Date(hiredAt).getTime()) / (1000 * 60 * 60 * 24 * 30))
   )
 
+  const cardClassName = ['employee-card']
+  if (isSelected) cardClassName.push('employee-card--selected')
+  if (archived) cardClassName.push('employee-card--archived')
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onSelect()
+    }
+  }
+
+  const handleDeleteClick = (event) => {
+    event.stopPropagation()
+    onDelete()
+  }
+
+  const handleToggleClick = (prop) => (event) => {
+    event.stopPropagation()
+    onToggleProp(prop)
+  }
+
+  const handleSalaryInput = (event) => {
+    event.stopPropagation()
+    onSalaryChange(event.target.value)
+  }
+
   return (
-    <article className='employee-card'>
+    <article
+      className={cardClassName.join(' ')}
+      onClick={onSelect}
+      onKeyDown={handleKeyDown}
+      role='button'
+      tabIndex={0}
+      aria-pressed={isSelected}
+    >
       <header className='employee-card__header'>
         <div className='employee-card__avatar' style={{ backgroundColor: avatarColor }}>
           {initials}
@@ -49,6 +90,9 @@ const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange })
             {rise && <span className='employee-card__chip employee-card__chip--rise'>Rise track</span>}
             {increase && (
               <span className='employee-card__chip employee-card__chip--increase'>Bonus</span>
+            )}
+            {archived && (
+              <span className='employee-card__chip employee-card__chip--archived'>Archived</span>
             )}
           </div>
           <div className='employee-card__secondary'>
@@ -64,7 +108,7 @@ const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange })
             )}
           </div>
         </div>
-        <button type='button' className='employee-card__delete' onClick={onDelete}>
+        <button type='button' className='employee-card__delete' onClick={handleDeleteClick}>
           <span className='sr-only'>Remove teammate</span>
           X
         </button>
@@ -95,7 +139,8 @@ const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange })
               min='0'
               step='1000'
               value={salary}
-              onChange={(event) => onSalaryChange(event.target.value)}
+              onChange={handleSalaryInput}
+              onClick={(event) => event.stopPropagation()}
             />
             <span>{formattedSalary}</span>
           </div>
@@ -103,14 +148,14 @@ const EmployeesListItem = ({ employee, onDelete, onToggleProp, onSalaryChange })
             <button
               type='button'
               className={increase ? 'is-active' : ''}
-              onClick={() => onToggleProp('increase')}
+              onClick={handleToggleClick('increase')}
             >
               Bonus ready
             </button>
             <button
               type='button'
               className={rise ? 'is-active' : ''}
-              onClick={() => onToggleProp('rise')}
+              onClick={handleToggleClick('rise')}
             >
               Promotion track
             </button>

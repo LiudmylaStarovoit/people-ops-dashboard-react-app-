@@ -7,7 +7,54 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 })
 
 const AppInfo = ({ stats }) => {
-  const { count, payroll, remoteShare, promotionReady, recognitionCount, avgTenure } = stats
+  const {
+    count,
+    payroll,
+    remoteShare,
+    promotionReady,
+    recognitionCount,
+    avgTenure,
+    archivedCount
+  } = stats
+
+  const metricCards = [
+    {
+      label: 'Team size',
+      value: count,
+      hint: 'Active teammates on board'
+    },
+    {
+      label: 'Total annual payroll',
+      value: currencyFormatter.format(payroll),
+      hint: 'Budget coverage across departments',
+      accent: true
+    },
+    {
+      label: 'Promotion ready',
+      value: promotionReady,
+      hint: 'Awaiting next step in growth plan'
+    },
+    {
+      label: 'Recognised talent',
+      value: recognitionCount,
+      hint: 'Currently flagged for bonuses'
+    },
+    {
+      label: 'Remote friendly',
+      value: `${remoteShare}%`,
+      hint: 'Distribution of hybrid & remote hires'
+    },
+    {
+      label: 'Average tenure',
+      value: `${avgTenure} yrs`,
+      hint: 'Experience accumulated in-house'
+    },
+    {
+      label: 'Archived teammates',
+      value: archivedCount,
+      hint: 'Parked profiles for future review'
+    }
+  ]
 
   return (
     <section className='app-info'>
@@ -21,43 +68,15 @@ const AppInfo = ({ stats }) => {
       </div>
 
       <div className='app-info__grid'>
-        <article className='app-info__card'>
-          <span className='app-info__label'>Team size</span>
-          <strong className='app-info__value'>{count}</strong>
-          <span className='app-info__hint'>Active teammates on board</span>
-        </article>
-
-        <article className='app-info__card'>
-          <span className='app-info__label'>Total annual payroll</span>
-          <strong className='app-info__value app-info__value--accent'>
-            {currencyFormatter.format(payroll)}
-          </strong>
-          <span className='app-info__hint'>Budget coverage across departments</span>
-        </article>
-
-        <article className='app-info__card'>
-          <span className='app-info__label'>Promotion ready</span>
-          <strong className='app-info__value'>{promotionReady}</strong>
-          <span className='app-info__hint'>Awaiting next step in growth plan</span>
-        </article>
-
-        <article className='app-info__card'>
-          <span className='app-info__label'>Recognised talent</span>
-          <strong className='app-info__value'>{recognitionCount}</strong>
-          <span className='app-info__hint'>Currently flagged for bonuses</span>
-        </article>
-
-        <article className='app-info__card'>
-          <span className='app-info__label'>Remote friendly</span>
-          <strong className='app-info__value'>{remoteShare}%</strong>
-          <span className='app-info__hint'>Distribution of hybrid & remote hires</span>
-        </article>
-
-        <article className='app-info__card'>
-          <span className='app-info__label'>Average tenure</span>
-          <strong className='app-info__value'>{avgTenure} yrs</strong>
-          <span className='app-info__hint'>Experience accumulated in-house</span>
-        </article>
+        {metricCards.map(({ label, value, hint, accent }) => (
+          <article className='app-info__card' key={label}>
+            <span className='app-info__label'>{label}</span>
+            <strong className={`app-info__value ${accent ? 'app-info__value--accent' : ''}`}>
+              {value}
+            </strong>
+            <span className='app-info__hint'>{hint}</span>
+          </article>
+        ))}
       </div>
     </section>
   )

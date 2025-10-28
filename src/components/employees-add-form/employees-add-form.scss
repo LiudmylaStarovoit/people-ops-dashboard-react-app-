@@ -2,13 +2,14 @@
   margin-top: 36px;
   padding: 42px 48px;
   border-radius: 28px;
-  background: rgba(11, 15, 25, 0.92);
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  box-shadow: 0 28px 52px rgba(15, 23, 42, 0.38);
-  color: #f8fafc;
+  background: var(--surface-section);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-elevated);
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   gap: 28px;
+  transition: background 0.4s ease;
 
   &__header {
     display: flex;
@@ -20,12 +21,13 @@
       margin: 0;
       font-size: 28px;
       letter-spacing: -0.02em;
+      color: var(--text-primary);
     }
 
     p {
       margin: 8px 0 0;
       max-width: 480px;
-      color: rgba(148, 163, 184, 0.85);
+      color: var(--text-muted);
       line-height: 1.6;
       font-size: 15px;
     }
@@ -34,9 +36,9 @@
   &__advanced {
     align-self: flex-start;
     border-radius: 14px;
-    border: 1px solid rgba(129, 140, 248, 0.35);
-    background: rgba(129, 140, 248, 0.08);
-    color: rgba(226, 232, 240, 0.85);
+    border: 1px solid color-mix(in srgb, var(--accent-primary) 35%, transparent);
+    background: color-mix(in srgb, var(--accent-primary) 12%, transparent);
+    color: var(--text-secondary);
     padding: 10px 18px;
     font-size: 13px;
     font-weight: 600;
@@ -47,7 +49,7 @@
 
     &.is-active,
     &:hover {
-      background: linear-gradient(120deg, #818cf8, #60a5fa);
+      background: linear-gradient(120deg, var(--accent-primary), var(--accent-secondary));
       border-color: transparent;
       color: #0f172a;
       box-shadow: 0 16px 28px rgba(99, 102, 241, 0.25);
@@ -78,7 +80,7 @@
     gap: 10px;
 
     span {
-      color: rgba(148, 163, 184, 0.75);
+      color: var(--text-muted);
       font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.08em;
@@ -88,10 +90,10 @@
     input,
     textarea {
       border-radius: 16px;
-      border: 1px solid rgba(99, 102, 241, 0.28);
-      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid color-mix(in srgb, var(--accent-primary) 28%, transparent);
+      background: var(--surface-input);
       padding: 14px 18px;
-      color: #f8fafc;
+      color: var(--text-primary);
       font-size: 15px;
       font-weight: 500;
       letter-spacing: 0.02em;
@@ -100,11 +102,11 @@
       resize: vertical;
 
       &::placeholder {
-        color: rgba(148, 163, 184, 0.6);
+        color: var(--text-soft);
       }
 
       &:focus {
-        border-color: rgba(129, 140, 248, 0.8);
+        border-color: var(--accent-primary);
         box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
       }
     }
@@ -121,10 +123,10 @@
 
     button {
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: rgba(148, 163, 184, 0.08);
+      border: 1px solid var(--border-strong);
+      background: color-mix(in srgb, var(--border-strong) 12%, transparent);
       padding: 12px 20px;
-      color: rgba(226, 232, 240, 0.9);
+      color: var(--text-secondary);
       font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.08em;
@@ -133,12 +135,12 @@
       transition: all 0.25s ease;
 
       &:hover {
-        border-color: rgba(129, 140, 248, 0.75);
-        color: #f8fafc;
+        border-color: color-mix(in srgb, var(--accent-primary) 65%, transparent);
+        color: var(--text-primary);
       }
 
       &.is-active {
-        background: linear-gradient(120deg, #34d399, #22d3ee);
+        background: linear-gradient(120deg, var(--accent-positive), var(--accent-info));
         border-color: transparent;
         color: #0f172a;
         box-shadow: 0 18px 26px rgba(45, 212, 191, 0.35);
@@ -163,8 +165,8 @@
       transition: transform 0.2s ease, box-shadow 0.2s ease;
 
       &:first-of-type {
-        background: linear-gradient(120deg, #818cf8, #a855f7);
-        color: #f8fafc;
+        background: linear-gradient(120deg, var(--accent-primary), #a855f7);
+        color: var(--text-primary);
         box-shadow: 0 20px 30px rgba(129, 140, 248, 0.25);
       }
 
@@ -175,9 +177,9 @@
     }
 
     .app-add-form__secondary {
-      background: rgba(15, 23, 42, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      color: rgba(226, 232, 240, 0.85);
+      background: var(--surface-section-alt);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
     }
   }
 

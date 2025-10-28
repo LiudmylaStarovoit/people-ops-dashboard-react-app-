@@ -1,12 +1,12 @@
 .app-info {
-  background: radial-gradient(circle at top left, rgba(140, 95, 246, 0.45), rgba(34, 40, 49, 0.9)),
-    linear-gradient(135deg, #14213d, #1b1f3b 55%, #0f172a);
+  background: var(--surface-hero);
   border-radius: 28px;
   padding: 48px 56px;
-  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.45);
-  color: #f8fafc;
+  box-shadow: var(--shadow-elevated);
+  color: var(--text-primary);
   position: relative;
   overflow: hidden;
+  transition: background 0.4s ease, color 0.4s ease;
 }
 
 .app-info::after {
@@ -15,6 +15,10 @@
   inset: 0;
   background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.08), transparent 45%);
   pointer-events: none;
+}
+
+:root[data-theme='light'] .app-info::after {
+  background: radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1), transparent 55%);
 }
 
 .app-info__headline {
@@ -30,8 +34,8 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.18);
-  color: #cbd5f5;
+  background: var(--surface-chip);
+  color: var(--text-secondary);
   font-size: 14px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -42,12 +46,12 @@
   font-size: 42px;
   letter-spacing: -0.03em;
   line-height: 1.15;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .app-info__subtitle {
   margin: 0;
-  color: rgba(226, 232, 240, 0.88);
+  color: var(--text-secondary);
   font-size: 17px;
   line-height: 1.6;
 }
@@ -61,18 +65,25 @@
 }
 
 .app-info__card {
-  background: rgba(15, 23, 42, 0.45);
+  background: var(--surface-section-alt);
   border-radius: 20px;
   padding: 20px 22px;
-  border: 1px solid rgba(148, 163, 184, 0.16);
+  border: 1px solid var(--border-subtle);
   backdrop-filter: blur(18px);
   display: flex;
   flex-direction: column;
   gap: 8px;
+  color: var(--text-primary);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.app-info__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
 }
 
 .app-info__label {
-  color: rgba(148, 163, 184, 0.85);
+  color: var(--text-muted);
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -83,15 +94,15 @@
   font-size: 32px;
   font-weight: 700;
   letter-spacing: -0.04em;
-  color: #f8fafc;
+  color: var(--text-primary);
 }
 
 .app-info__value--accent {
-  color: #ffd166;
+  color: var(--accent-warning);
 }
 
 .app-info__hint {
-  color: rgba(148, 163, 184, 0.8);
+  color: var(--text-soft);
   font-size: 14px;
   line-height: 1.4;
 }
