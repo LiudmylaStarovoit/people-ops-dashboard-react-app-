@@ -59,3 +59,18 @@ export interface AnalyticsSummary {
   remoteShare: number
   averageSalary: number
 }
+
+export interface EmployeeListParams {
+  page?: number
+  pageSize?: number
+}
+
+export interface EmployeeListResponse {
+  items: Employee[]
+  total: number
+  page: number
+  pageSize: number
+  hasMore: boolean
+  summary: EmployeeStats
+  trend: EmployeeTrendPoint[]
+}

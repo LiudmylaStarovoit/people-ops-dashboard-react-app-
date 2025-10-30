@@ -1,16 +1,22 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+  type InfiniteData
+} from '@tanstack/react-query'
 
 import { employeeService } from '../services/employee-service'
 import type {
   Employee,
+  EmployeeCreateInput,
   EmployeeFormInput,
+  EmployeeListResponse,
   EmployeePropertyToggle,
   EmployeeStats,
   EmployeeTrendPoint,
   EmployeeUpdateInput
 } from '../types/employee'
-
-const PAGE_SIZE = 10
 
 interface UseEmployeesResult {
   employees: Employee[]
@@ -29,176 +35,183 @@ interface UseEmployeesResult {
   refresh: () => Promise<void>
 }
 
+const PAGE_SIZE = 10
+const EMPLOYEES_QUERY_KEY = ['employees']
+
+const normaliseFormPayload = (payload: EmployeeFormInput): EmployeeCreateInput => ({
+  name: payload.name.trim(),
+  role: payload.role.trim(),
+  department: payload.department.trim() || 'Unassigned',
+  location: payload.location.trim() || 'Remote',
+  salary: payload.salary,
+  impactScore: payload.impactScore,
+  remote: payload.remote,
+  rise: payload.rise,
+  increase: payload.increase ?? false,
+  archived: false,
+  hiredAt: payload.hiredAt
+})
+
+const mergePages = (
+  data: InfiniteData<EmployeeListResponse, unknown> | undefined
+): Employee[] => data?.pages.flatMap((page) => page.items) ?? []
+
+const extractSummary = (
+  data: InfiniteData<EmployeeListResponse, unknown> | undefined
+): EmployeeStats | null => data?.pages[0]?.summary ?? null
+
+const extractTrend = (
+  data: InfiniteData<EmployeeListResponse, unknown> | undefined
+): EmployeeTrendPoint[] => data?.pages[0]?.trend ?? []
+
 export const useEmployees = (): UseEmployeesResult => {
-  const [employees, setEmployees] = useState<Employee[]>([])
-  const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [summary, setSummary] = useState<EmployeeStats | null>(null)
-  const [trend, setTrend] = useState<EmployeeTrendPoint[]>([])
-  const [page, setPage] = useState<number>(1)
-  const [hasMore, setHasMore] = useState<boolean>(false)
+  const queryClient = useQueryClient()
 
-  const fetchPage = useCallback(
-    async (pageToLoad: number, append: boolean) => {
-      try {
-        if (append) {
-          setIsLoadingMore(true)
-        } else {
-          setIsLoading(true)
-        }
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    refetch
+  } = useInfiniteQuery<EmployeeListResponse, Error>({
+    queryKey: EMPLOYEES_QUERY_KEY,
+    queryFn: ({ pageParam = 1 }) =>
+      employeeService.list({ page: Number(pageParam), pageSize: PAGE_SIZE }),
+    getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.page + 1 : undefined),
+    initialPageParam: 1,
+    staleTime: 30_000
+  })
 
-        const response = await employeeService.list({ page: pageToLoad, pageSize: PAGE_SIZE })
-
-        if (append) {
-          setEmployees((prev) => {
-            const existingIds = new Set(prev.map((employee) => employee.id))
-            const merged = [...prev]
-            response.items.forEach((item) => {
-              if (!existingIds.has(item.id)) {
-                merged.push(item)
-              }
-            })
-            return merged
-          })
-        } else {
-          setEmployees(response.items)
-        }
-
-        setSummary(response.summary)
-        setTrend(response.trend)
-        setHasMore(response.hasMore)
-        setPage(response.page)
-        setError(null)
-      } catch (err) {
-        console.error(err)
-        setError('Failed to load teammates. Please try again.')
-      } finally {
-        if (append) {
-          setIsLoadingMore(false)
-        } else {
-          setIsLoading(false)
-        }
-      }
-    },
-    []
+  const invalidateEmployees = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: EMPLOYEES_QUERY_KEY }),
+    [queryClient]
   )
 
-  const reloadAllPages = useCallback(async () => {
-    const currentPage = page
-    await fetchPage(1, false)
-    for (let nextPage = 2; nextPage <= currentPage; nextPage += 1) {
-      // eslint-disable-next-line no-await-in-loop
-      await fetchPage(nextPage, true)
-    }
-  }, [fetchPage, page])
+  const addEmployeeMutation = useMutation({
+    mutationFn: (payload: EmployeeFormInput) =>
+      employeeService.create(normaliseFormPayload(payload)),
+    onSuccess: invalidateEmployees
+  })
 
-  useEffect(() => {
-    void fetchPage(1, false)
-  }, [fetchPage])
+  const deleteEmployeeMutation = useMutation({
+    mutationFn: (id: number) => employeeService.remove(id),
+    onSuccess: invalidateEmployees
+  })
 
-  const addEmployee = useCallback(
-    async (payload: EmployeeFormInput) => {
+  const toggleEmployeeMutation = useMutation({
+    mutationFn: ({ id, prop }: { id: number; prop: EmployeePropertyToggle }) =>
+      employeeService.toggle(id, prop),
+    onSuccess: invalidateEmployees
+  })
+
+  const updateSalaryMutation = useMutation({
+    mutationFn: ({ id, value }: { id: number; value: number }) =>
+      employeeService.update(id, { salary: value }),
+    onSuccess: invalidateEmployees
+  })
+
+  const updateEmployeeMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: number; updates: EmployeeUpdateInput }) =>
+      employeeService.update(id, updates),
+    onSuccess: invalidateEmployees
+  })
+
+  const addEmployee: UseEmployeesResult['addEmployee'] = useCallback(
+    async (payload) => {
       try {
-        await employeeService.create({
-          ...payload,
-          increase: payload.increase ?? false,
-          archived: false
-        })
-        await reloadAllPages()
+        await addEmployeeMutation.mutateAsync(payload)
         return true
-      } catch (err) {
-        console.error(err)
-        setError('Failed to add teammate.')
+      } catch (mutationError) {
+        console.error(mutationError)
         return false
       }
     },
-    [reloadAllPages]
+    [addEmployeeMutation]
   )
 
-  const deleteEmployee = useCallback(
-    async (id: number) => {
+  const deleteEmployee: UseEmployeesResult['deleteEmployee'] = useCallback(
+    async (id) => {
       try {
-        await employeeService.remove(id)
-        await reloadAllPages()
+        await deleteEmployeeMutation.mutateAsync(id)
         return true
-      } catch (err) {
-        console.error(err)
-        setError('Failed to remove teammate.')
+      } catch (mutationError) {
+        console.error(mutationError)
         return false
       }
     },
-    [reloadAllPages]
+    [deleteEmployeeMutation]
   )
 
-  const toggleEmployeeProperty = useCallback(
-    async (id: number, prop: EmployeePropertyToggle) => {
+  const toggleEmployeeProperty: UseEmployeesResult['toggleEmployeeProperty'] = useCallback(
+    async (id, prop) => {
       try {
-        await employeeService.toggle(id, prop)
-        await reloadAllPages()
+        await toggleEmployeeMutation.mutateAsync({ id, prop })
         return true
-      } catch (err) {
-        console.error(err)
-        setError('Failed to update teammate status.')
+      } catch (mutationError) {
+        console.error(mutationError)
         return false
       }
     },
-    [reloadAllPages]
+    [toggleEmployeeMutation]
   )
 
-  const updateSalary = useCallback(
-    async (id: number, value: number) => {
+  const updateSalary: UseEmployeesResult['updateSalary'] = useCallback(
+    async (id, value) => {
       try {
-        await employeeService.update(id, { salary: value })
-        await reloadAllPages()
+        await updateSalaryMutation.mutateAsync({ id, value })
         return true
-      } catch (err) {
-        console.error(err)
-        setError('Failed to update salary.')
+      } catch (mutationError) {
+        console.error(mutationError)
         return false
       }
     },
-    [reloadAllPages]
+    [updateSalaryMutation]
   )
 
-  const updateEmployeeHandler = useCallback(
-    async (id: number, updates: EmployeeUpdateInput) => {
+  const updateEmployee: UseEmployeesResult['updateEmployee'] = useCallback(
+    async (id, updates) => {
       try {
-        const updated = await employeeService.update(id, updates)
-        await reloadAllPages()
-        return updated
-      } catch (err) {
-        console.error(err)
-        setError('Failed to save teammate.')
+        return await updateEmployeeMutation.mutateAsync({ id, updates })
+      } catch (mutationError) {
+        console.error(mutationError)
         return null
       }
     },
-    [reloadAllPages]
+    [updateEmployeeMutation]
   )
 
-  const loadMore = useCallback(async () => {
-    if (hasMore && !isLoadingMore) {
-      await fetchPage(page + 1, true)
+  const loadMore: UseEmployeesResult['loadMore'] = useCallback(async () => {
+    if (hasNextPage) {
+      await fetchNextPage()
     }
-  }, [fetchPage, hasMore, isLoadingMore, page])
+  }, [fetchNextPage, hasNextPage])
 
-  const refresh = useCallback(async () => {
-    await reloadAllPages()
-  }, [reloadAllPages])
+  const refresh: UseEmployeesResult['refresh'] = useCallback(async () => {
+    await refetch()
+  }, [refetch])
+
+  const employees = mergePages(data)
+  const summary = extractSummary(data)
+  const trend = extractTrend(data)
+
+  const errorMessage =
+    error instanceof Error ? error.message : error ? 'Failed to load teammates.' : null
 
   return {
     employees,
     isLoading,
-    isLoadingMore,
-    error,
+    isLoadingMore: isFetchingNextPage,
+    error: errorMessage,
     summary,
     trend,
-    hasMore,
+    hasMore: Boolean(hasNextPage),
     addEmployee,
     deleteEmployee,
     toggleEmployeeProperty,
     updateSalary,
-    updateEmployee: updateEmployeeHandler,
+    updateEmployee,
     loadMore,
     refresh
   }

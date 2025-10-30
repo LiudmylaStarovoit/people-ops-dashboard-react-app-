@@ -5,7 +5,7 @@ import type { EmployeeFormInput } from '../../types/employee'
 import './employees-add-form.scss'
 
 interface EmployeesAddFormProps {
-  onAdd: (payload: EmployeeFormInput) => void | Promise<void>
+  onAdd: (payload: EmployeeFormInput) => Promise<boolean> | boolean
   departments?: string[]
 }
 
@@ -83,7 +83,7 @@ const EmployeesAddForm = ({ onAdd, departments = [] }: EmployeesAddFormProps) =>
       return
     }
 
-    await onAdd({
+    const success = await onAdd({
       name: formValues.name.trim(),
       role: formValues.role.trim(),
       department: formValues.department.trim() || 'Unassigned',
@@ -95,7 +95,9 @@ const EmployeesAddForm = ({ onAdd, departments = [] }: EmployeesAddFormProps) =>
       hiredAt: formValues.hiredAt
     })
 
-    resetForm()
+    if (success) {
+      resetForm()
+    }
   }
 
   return (

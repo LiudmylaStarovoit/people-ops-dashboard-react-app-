@@ -1,17 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 
 import AppInfo from '../components/app-info/app-info'
 import AppFilter from '../components/app-filter/app-filter'
-import EmployeeDetail from '../components/employee-detail/employee-detail'
 import EmployeesAddForm from '../components/employees-add-form/employees-add-form'
 import EmployeesList from '../components/employees-list/employees-list'
 import SearchPanel from '../components/search-panel/search-panel'
-import TeamAnalytics from '../components/team-analytics/team-analytics'
 import { useEmployees } from '../hooks/use-employees'
 import type { AnalyticsSummary, Employee, EmployeeFilterOption, EmployeeFormInput, EmployeePropertyToggle, SortOption } from '../types/employee'
 import { buildEmployeeTrendData, calculateEmployeeStats } from '../utils/employee-analytics'
 
 import './App.css'
+
+const EmployeeDetail = lazy(() => import('../components/employee-detail/employee-detail'))
+const TeamAnalytics = lazy(() => import('../components/team-analytics/team-analytics'))
 
 const App = () => {
   const {
@@ -56,9 +57,8 @@ const App = () => {
     }
   }
 
-  const handleAddEmployee = async (payload: EmployeeFormInput) => {
-    await addEmployee(payload)
-  }
+  const handleAddEmployee: (payload: EmployeeFormInput) => Promise<boolean> = (payload) =>
+    addEmployee(payload)
 
   const handleToggleProp = (id: number, prop: EmployeePropertyToggle) => {
     void toggleEmployeeProperty(id, prop)
@@ -257,20 +257,32 @@ const App = () => {
         </div>
       )}
 
-      {employees.length > 0 && <TeamAnalytics data={trendData} summary={analyticsSummary} />}
+      <Suspense
+        fallback={
+          <section className='app__analytics-skeleton'>
+            <p>Loading analytics...</p>
+          </section>
+        }
+      >
+        {employees.length > 0 ? (
+          <TeamAnalytics data={trendData} summary={analyticsSummary} />
+        ) : null}
+      </Suspense>
 
       <EmployeesAddForm onAdd={handleAddEmployee} departments={departments.slice(1)} />
 
       <div className={`app__backdrop ${isDetailOpen ? 'is-visible' : ''}`} onClick={handleCloseDetail} />
 
-      <EmployeeDetail
-        employee={selectedEmployee}
-        isOpen={isDetailOpen && Boolean(selectedEmployee)}
-        onClose={handleCloseDetail}
-        onSave={handleUpdateEmployee}
-        onArchiveToggle={handleArchiveToggle}
-        onDelete={handleDelete}
-      />
+      <Suspense fallback={null}>
+        <EmployeeDetail
+          employee={selectedEmployee}
+          isOpen={isDetailOpen && Boolean(selectedEmployee)}
+          onClose={handleCloseDetail}
+          onSave={handleUpdateEmployee}
+          onArchiveToggle={handleArchiveToggle}
+          onDelete={handleDelete}
+        />
+      </Suspense>
     </div>
   )
 }

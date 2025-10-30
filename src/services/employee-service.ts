@@ -1,4 +1,13 @@
-import type { Employee, EmployeeCreateInput, EmployeePropertyToggle, EmployeeStats, EmployeeTrendPoint, EmployeeUpdateInput } from '../types/employee'
+import type {
+  Employee,
+  EmployeeCreateInput,
+  EmployeeListParams,
+  EmployeeListResponse,
+  EmployeePropertyToggle,
+  EmployeeStats,
+  EmployeeTrendPoint,
+  EmployeeUpdateInput
+} from '../types/employee'
 import { buildEmployeeTrendData, calculateEmployeeStats } from '../utils/employee-analytics'
 
 const ACCENT_PALETTE = ['#8c5ff6', '#ff784f', '#5cb8a6', '#ffd166', '#06d6a0', '#4d96ff']
@@ -168,7 +177,6 @@ const LOCATIONS = [
 
 const generateEmployees = (): Employee[] => {
   const result: Employee[] = [...BASE_EMPLOYEES]
-  let idCounter = BASE_EMPLOYEES.length + 1
   const startDate = new Date('2018-01-01')
 
   for (let i = 0; i < 40; i += 1) {
@@ -185,7 +193,7 @@ const generateEmployees = (): Employee[] => {
     const impactScore = Math.min(99, 70 + (i % 9) * 3)
 
     result.push({
-      id: idCounter,
+      id: BASE_EMPLOYEES.length + i + 1,
       name: `${firstName} ${lastName}`,
       role,
       department,
@@ -199,8 +207,6 @@ const generateEmployees = (): Employee[] => {
       avatarColor: getAccentColor(result.length),
       archived: i % 11 === 0
     })
-
-    idCounter += 1
   }
 
   return result
@@ -212,21 +218,6 @@ let nextId = employees.length + 1
 const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value))
-
-export interface EmployeeListParams {
-  page?: number
-  pageSize?: number
-}
-
-export interface EmployeeListResponse {
-  items: Employee[]
-  total: number
-  page: number
-  pageSize: number
-  hasMore: boolean
-  summary: EmployeeStats
-  trend: EmployeeTrendPoint[]
-}
 
 export const employeeService = {
   async list(params: EmployeeListParams = {}): Promise<EmployeeListResponse> {
@@ -252,6 +243,7 @@ export const employeeService = {
 
   async create(payload: EmployeeCreateInput): Promise<Employee> {
     await delay()
+
     const newEmployee: Employee = {
       ...payload,
       id: nextId,
@@ -260,11 +252,13 @@ export const employeeService = {
 
     employees = [...employees, newEmployee]
     nextId += 1
+
     return clone(newEmployee)
   },
 
   async update(id: number, updates: EmployeeUpdateInput): Promise<Employee> {
     await delay()
+
     employees = employees.map((employee) =>
       employee.id === id ? { ...employee, ...updates } : employee
     )

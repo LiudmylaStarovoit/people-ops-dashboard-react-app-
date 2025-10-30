@@ -1,8 +1,24 @@
 import { render, screen } from '@testing-library/react'
+import { ReactNode } from 'react'
 import userEvent from '@testing-library/user-event'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 import { employeeServiceUtils } from '../services/employee-service'
 import App from './App'
+
+const renderWithClient = (ui: React.ReactNode) => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 0,
+        refetchOnWindowFocus: false
+      }
+    }
+  })
+
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>)
+}
 
 beforeEach(() => {
   employeeServiceUtils.reset()
@@ -10,7 +26,7 @@ beforeEach(() => {
 
 describe('App dashboard', () => {
   it('renders headline metrics', async () => {
-    render(<App />)
+    renderWithClient(<App />)
 
     expect(await screen.findByText(/people operations dashboard/i)).toBeInTheDocument()
     expect(await screen.findByText(/team size/i)).toBeInTheDocument()
@@ -20,7 +36,7 @@ describe('App dashboard', () => {
 
   it('toggles theme between dark and light', async () => {
     const user = userEvent.setup()
-    render(<App />)
+    renderWithClient(<App />)
 
     expect(document.documentElement.dataset.theme).toBe('dark')
 

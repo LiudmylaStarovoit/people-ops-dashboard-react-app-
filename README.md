@@ -1,24 +1,25 @@
 # People Ops Dashboard
 
-The React dashboard for People Operations teams. It surfaces core employee metrics, highlights top performers, and lets you triage your roster with modern UX patterns (filters, drawers, analytics). The current build ships with a fully typed mock API, lazy-loaded pagination, and a consistent visual system ready for portfolio demos or future backend integration.
+The React + TypeScript dashboard for People Operations teams. It highlights key employee metrics, supports nuanced roster management (filters, drawers, inline edits), and now ships with a fully typed mock API, TanStack Query caching layer, and bundle-aware optimisations. Perfect for portfolio demos or as a foundation for real backend integration.
 
 ## ✨ Highlights
 
-- **Typed domain models** (`src/types/employee.ts`) for employees, stats, filters, and trends.
-- **Mock data service** (`src/services/employee-service.ts`) with async CRUD, simulated latency, auto-generated seed data, and analytics out of the box.
-- **Reusable data hook** (`src/hooks/use-employees.ts`) that centralises fetching, optimistic updates, pagination (`loadMore`), and error/loading states.
-- **Modern UI**: hero metrics, facet filters, search, inline editing, detail drawer with archiving, and a Recharts-powered “Team momentum” insight.
-- **Light/Dark themes** shared across the component library with smooth transitions.
-- **TypeScript-first tooling** (tsconfig, Vitest + Testing Library + happy-dom) for a professional developer experience.
+- **Typed domain models** (`src/types/employee.ts`) covering employees, filters, stats, and trend points.
+- **Mock data layer** (`src/services/employee-service.ts`) with asynchronous CRUD, simulated latency, auto-generated seed data, pagination metadata, and built-in analytics helpers (`src/utils/employee-analytics.ts`).
+- **TanStack Query hook** (`src/hooks/use-employees.ts`) orchestrates infinite queries, optimistic mutations (add/delete/toggle/update), and exposes `loadMore` / `refresh` for a real-data feel.
+- **Modern UI**: KPI hero, facet filters, search, inline salary editing, archiving drawer, and a lazily loaded Recharts “Team momentum” panel.
+- **Bundle-aware build**: manual chunk splitting (React, Query, Recharts) + `React.lazy`/`Suspense` for heavy panels, eliminating the previous Vite size warning.
+- **TypeScript-first tooling** with Vitest + Testing Library + happy-dom, ready for CI integration.
 
 ## 🛠️ Tech Stack
 
-- React 19 + Vite
+- React 19 + Vite 7
 - TypeScript
 - SCSS/CSS modules
-- Recharts (analytics)
-- Vitest + Testing Library + happy-dom
-- npm (Node ≥20.19 recommended)
+- TanStack Query (React Query v5)
+- Recharts
+- Vitest + @testing-library/react + happy-dom
+- Node ≥ 20.19
 
 ## 🚀 Getting Started
 
@@ -29,51 +30,48 @@ npm install
 # 2. Start the dev server
 npm run dev
 
-# 3. Run the type checker
+# 3. Type-check the project
 npx tsc --noEmit
 
-# 4. Execute unit tests
+# 4. Run unit tests
 npm run test
 
-# 5. Production build
+# 5. Build for production
 npm run build
 ```
-
-> **Note:** Vite warns when running on Node 20.18.x. Upgrade to Node ≥20.19 (or 22.12+) for full compatibility.
 
 ## 📂 Project Structure
 
 ```
 src/
-├── app/                      # Root app shell (dashboard layout + wiring)
-├── components/               # Feature components (filters, info cards, list, modals, forms)
-├── hooks/                    # Custom hooks (useEmployees)
-├── services/                 # Mock API + stateful payload logic
+├── app/                      # Root App component, routing of composed features
+├── components/               # Feature-level UI (filters, info cards, lists, drawers, analytics)
+├── hooks/                    # Custom hooks (TanStack Query adapter)
+├── services/                 # Mock API + async stateful helpers
 ├── types/                    # TypeScript domain models
-├── utils/                    # Analytics helpers (stats/trend builders)
-├── main.tsx                  # Entry point
-└── index.css                 # Theming, layout primitives
+├── utils/                    # Analytics/stat helpers reused by service/hook
+├── main.tsx                  # Entry point + QueryClient provider
+└── index.css                 # Global theming and layout primitives
 ```
 
 ## ⚙️ Available Scripts
 
-| Command            | Description                              |
-| ------------------ | ---------------------------------------- |
-| `npm run dev`      | Start Vite in development mode           |
-| `npm run build`    | Production bundle with Vite              |
-| `npm run preview`  | Preview the production build             |
-| `npm run test`     | Vitest (+ Testing Library) test runner   |
-| `npx tsc --noEmit` | Check TypeScript types without emitting  |
+| Command            | Description                                   |
+| ------------------ | --------------------------------------------- |
+| `npm run dev`      | Start Vite in development mode                |
+| `npm run build`    | Production bundle (manual chunks enabled)     |
+| `npm run preview`  | Preview the production build                  |
+| `npm run test`     | Vitest test suite (Testing Library + happy-dom)|
+| `npx tsc --noEmit` | Type-check the project without emitting files |
 
 ## 📈 Future Enhancements
 
-- Swap the mock service for a real REST/GraphQL backend (or mock with MSW/json-server).
-- Layer in TanStack Query for smarter caching + background refetches.
+- Swap the mock service for a real REST/GraphQL backend (or MSW/json-server).
 - Expand test coverage (more component cases, Playwright/Cypress for e2e).
-- Introduce Storybook + design tokens to document the component system.
-- Address bundle warnings via code-splitting or dynamic imports.
-- Wire a CI pipeline (lint + typecheck + test + build) on GitHub Actions.
+- Introduce Storybook + design tokens to document the UI system.
+- Set up CI (lint + type-check + test + build) via GitHub Actions.
+- Add richer error handling and toast notifications for mutations.
 
 ## 📄 License
 
-MIT — feel free to use and adapt for your own projects. If you showcase it in a portfolio, a shout-out is always appreciated!
+MIT — feel free to use and adapt for your own projects. A shout-out is always appreciated if you showcase it in a portfolio! 😊
