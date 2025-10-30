@@ -1,8 +1,13 @@
+import type { Employee, EmployeePropertyToggle } from '../../types/employee'
 import EmployeesListItem from '../employees-list-item/employees-list-item'
 
 import './employees-list.css'
 
-const EmptyState = ({ isArchiveView }) => (
+interface EmptyStateProps {
+  isArchiveView: boolean
+}
+
+const EmptyState = ({ isArchiveView }: EmptyStateProps) => (
   <div className='employees-list__empty'>
     <div className='employees-list__empty-beacon' />
     <h3>{isArchiveView ? 'No archived teammates yet' : 'No teammates match your filters yet'}</h3>
@@ -17,6 +22,16 @@ const EmptyState = ({ isArchiveView }) => (
   </div>
 )
 
+interface EmployeesListProps {
+  data: Employee[]
+  onDelete: (id: number) => void
+  onToggleProp: (id: number, prop: EmployeePropertyToggle) => void
+  onSalaryChange: (id: number, value: number) => void
+  onSelect: (id: number) => void
+  selectedId: number | null
+  isArchiveView: boolean
+}
+
 const EmployeesList = ({
   data,
   onDelete,
@@ -25,7 +40,7 @@ const EmployeesList = ({
   onSelect,
   selectedId,
   isArchiveView
-}) => {
+}: EmployeesListProps) => {
   if (!data.length) {
     return (
       <section className='employees-list'>

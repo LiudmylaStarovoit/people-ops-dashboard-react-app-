@@ -75,6 +75,16 @@
   gap: 24px;
 }
 
+.app__status {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.app__status--error {
+  color: var(--accent-danger);
+}
+
 .app__backdrop {
   position: fixed;
   inset: 0;
@@ -89,6 +99,36 @@
 .app__backdrop.is-visible {
   opacity: 1;
   pointer-events: all;
+}
+
+.app__load-more {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0 32px;
+}
+
+.app__load-more button {
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-chip);
+  color: var(--text-primary);
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, opacity 0.2s ease;
+}
+
+.app__load-more button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.app__load-more button:not(:disabled):hover {
+  border-color: var(--accent-primary);
+  background: var(--surface-chip-strong);
 }
 
 @media (max-width: 720px) {

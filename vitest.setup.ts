@@ -16,14 +16,17 @@ if (!globalThis.ResizeObserver) {
 }
 
 if (!window.matchMedia) {
-  window.matchMedia = () => ({
-    matches: false,
-    addListener: () => {},
-    removeListener: () => {},
-    addEventListener: () => {},
-    removeEventListener: () => {},
-    dispatchEvent: () => false
-  })
+  window.matchMedia = () =>
+    ({
+      matches: false,
+      media: '',
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false
+    } as MediaQueryList)
 }
 
 if (!window.print) {

@@ -1,18 +1,27 @@
-import { useCallback } from 'react'
+import { useCallback, type ChangeEvent } from 'react'
+
+import type { SortOption } from '../../types/employee'
 
 import './search-panel.css'
 
-const SearchPanel = ({ term, sortOption, onUpdateSearch, onSortChange }) => {
+interface SearchPanelProps {
+  term: string
+  sortOption: SortOption
+  onUpdateSearch: (value: string) => void
+  onSortChange: (value: SortOption) => void
+}
+
+const SearchPanel = ({ term, sortOption, onUpdateSearch, onSortChange }: SearchPanelProps) => {
   const handleSearchChange = useCallback(
-    (event) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       onUpdateSearch(event.target.value)
     },
     [onUpdateSearch]
   )
 
   const handleSortChange = useCallback(
-    (event) => {
-      onSortChange(event.target.value)
+    (event: ChangeEvent<HTMLSelectElement>) => {
+      onSortChange(event.target.value as SortOption)
     },
     [onSortChange]
   )

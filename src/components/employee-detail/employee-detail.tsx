@@ -1,9 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react'
+
+import type { Employee } from '../../types/employee'
 
 import './employee-detail.css'
 
-const EmployeeDetail = ({ employee, isOpen, onClose, onSave, onArchiveToggle, onDelete }) => {
-  const [formState, setFormState] = useState(employee ?? null)
+interface EmployeeDetailProps {
+  employee: Employee | null
+  isOpen: boolean
+  onClose: () => void
+  onSave: (employee: Employee) => void
+  onArchiveToggle: (id: number) => void
+  onDelete: (id: number) => void
+}
+
+const EmployeeDetail = ({
+  employee,
+  isOpen,
+  onClose,
+  onSave,
+  onArchiveToggle,
+  onDelete
+}: EmployeeDetailProps) => {
+  const [formState, setFormState] = useState<Employee | null>(employee ?? null)
 
   useEffect(() => {
     setFormState(employee ? { ...employee } : null)
@@ -13,14 +31,40 @@ const EmployeeDetail = ({ employee, isOpen, onClose, onSave, onArchiveToggle, on
     return null
   }
 
-  const handleChange = (field) => (event) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value
-    setFormState((prev) => ({ ...prev, [field]: value }))
-  }
+  const handleChange =
+    <K extends keyof Employee>(field: K) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const target = event.target
+      const value =
+        target.type === 'checkbox' ? target.checked : target.value
 
-  const handleSubmit = (event) => {
+      setFormState((prev) => {
+        if (!prev) {
+          return prev
+        }
+
+        let nextValue: Employee[K]
+
+        if (field === 'salary' || field === 'impactScore') {
+          nextValue = Number(value) as Employee[K]
+        } else if (field === 'remote' || field === 'rise' || field === 'increase' || field === 'archived') {
+          nextValue = Boolean(value) as Employee[K]
+        } else {
+          nextValue = value as Employee[K]
+        }
+
+        return {
+          ...prev,
+          [field]: nextValue
+        }
+      })
+    }
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    onSave(formState)
+    if (formState) {
+      onSave(formState)
+    }
   }
 
   const handleArchive = () => {

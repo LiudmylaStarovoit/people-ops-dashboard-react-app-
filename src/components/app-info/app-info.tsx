@@ -1,3 +1,5 @@
+import type { EmployeeStats } from '../../types/employee'
+
 import './app-info.css'
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
@@ -6,7 +8,11 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0
 })
 
-const AppInfo = ({ stats }) => {
+interface AppInfoProps {
+  stats: EmployeeStats
+}
+
+const AppInfo = ({ stats }: AppInfoProps) => {
   const {
     count,
     payroll,
@@ -17,7 +23,7 @@ const AppInfo = ({ stats }) => {
     archivedCount
   } = stats
 
-  const metricCards = [
+  const metricCards: Array<{ label: string; value: string | number; hint: string; accent?: boolean }> = [
     {
       label: 'Team size',
       value: count,

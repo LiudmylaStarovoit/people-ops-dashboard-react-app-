@@ -1,3 +1,7 @@
+import type { ChangeEvent, KeyboardEvent, MouseEvent } from 'react'
+
+import type { Employee, EmployeePropertyToggle } from '../../types/employee'
+
 import './employees-list-item.css'
 
 const salaryFormatter = new Intl.NumberFormat('en-US', {
@@ -6,7 +10,7 @@ const salaryFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0
 })
 
-const getInitials = (name) =>
+const getInitials = (name: string) =>
   name
     .split(' ')
     .map((chunk) => chunk[0])
@@ -15,6 +19,15 @@ const getInitials = (name) =>
     .slice(0, 2)
     .toUpperCase()
 
+interface EmployeesListItemProps {
+  employee: Employee
+  onDelete: () => void
+  onToggleProp: (prop: EmployeePropertyToggle) => void
+  onSalaryChange: (value: number) => void
+  onSelect: () => void
+  isSelected: boolean
+}
+
 const EmployeesListItem = ({
   employee,
   onDelete,
@@ -22,7 +35,7 @@ const EmployeesListItem = ({
   onSalaryChange,
   onSelect,
   isSelected
-}) => {
+}: EmployeesListItemProps) => {
   const {
     name,
     role,
@@ -49,26 +62,27 @@ const EmployeesListItem = ({
   if (isSelected) cardClassName.push('employee-card--selected')
   if (archived) cardClassName.push('employee-card--archived')
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       onSelect()
     }
   }
 
-  const handleDeleteClick = (event) => {
+  const handleDeleteClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
     onDelete()
   }
 
-  const handleToggleClick = (prop) => (event) => {
-    event.stopPropagation()
-    onToggleProp(prop)
-  }
+  const handleToggleClick =
+    (prop: EmployeePropertyToggle) => (event: MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation()
+      onToggleProp(prop)
+    }
 
-  const handleSalaryInput = (event) => {
+  const handleSalaryInput = (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation()
-    onSalaryChange(event.target.value)
+    onSalaryChange(Number(event.target.value))
   }
 
   return (

@@ -1,6 +1,8 @@
+import type { EmployeeFilterOption } from '../../types/employee'
+
 import './app-filter.css'
 
-const filterButtons = [
+const filterButtons: Array<{ name: EmployeeFilterOption; label: string }> = [
   { name: 'all', label: 'All team members' },
   { name: 'rise', label: 'Promotion ready' },
   { name: 'increase', label: 'Bonus spotlight' },
@@ -9,7 +11,21 @@ const filterButtons = [
   { name: 'archived', label: 'Archived' }
 ]
 
-const AppFilter = ({ filter, department, departments, onFilterSelect, onDepartmentChange }) => {
+interface AppFilterProps {
+  filter: EmployeeFilterOption
+  department: string
+  departments: string[]
+  onFilterSelect: (value: EmployeeFilterOption) => void
+  onDepartmentChange: (value: string) => void
+}
+
+const AppFilter = ({
+  filter,
+  department,
+  departments,
+  onFilterSelect,
+  onDepartmentChange
+}: AppFilterProps) => {
   return (
     <div className='app-filter'>
       <div className='app-filter__segmented'>

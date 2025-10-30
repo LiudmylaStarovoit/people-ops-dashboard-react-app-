@@ -10,31 +10,56 @@ import {
   YAxis
 } from 'recharts'
 
+import type { AnalyticsSummary, EmployeeTrendPoint } from '../../types/employee'
+
 import './team-analytics.css'
 
-const CustomTooltip = ({ active, payload, label }) => {
+interface CustomTooltipPoint {
+  value?: number | string
+}
+
+interface CustomTooltipProps {
+  active?: boolean
+  label?: string
+  payload?: CustomTooltipPoint[]
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (!active || !payload?.length) {
     return null
   }
 
   const [payrollPoint, remotePoint] = payload
 
+  const payrollValue =
+    typeof payrollPoint?.value === 'number'
+      ? payrollPoint.value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+      : '—'
+
+  const remoteValue =
+    typeof remotePoint?.value === 'number' ? `${remotePoint.value}%` : '—'
+
   return (
     <div className='team-analytics__tooltip'>
       <span className='team-analytics__tooltip-label'>{label}</span>
       <div className='team-analytics__tooltip-field'>
         <span>Total payroll</span>
-        <strong>{payrollPoint?.value?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</strong>
+        <strong>{payrollValue}</strong>
       </div>
       <div className='team-analytics__tooltip-field'>
         <span>Remote share</span>
-        <strong>{remotePoint?.value}%</strong>
+        <strong>{remoteValue}</strong>
       </div>
     </div>
   )
 }
 
-const TeamAnalytics = ({ data, summary }) => {
+interface TeamAnalyticsProps {
+  data: EmployeeTrendPoint[]
+  summary: AnalyticsSummary
+}
+
+const TeamAnalytics = ({ data, summary }: TeamAnalyticsProps) => {
   return (
     <section className='team-analytics'>
       <header className='team-analytics__header'>
@@ -73,7 +98,7 @@ const TeamAnalytics = ({ data, summary }) => {
             <XAxis dataKey='label' stroke='var(--chart-axis)' />
             <YAxis
               yAxisId='left'
-              tickFormatter={(value) =>
+              tickFormatter={(value: number) =>
                 value.toLocaleString('en-US', { notation: 'compact', maximumFractionDigits: 1 })
               }
               stroke='var(--chart-axis)'

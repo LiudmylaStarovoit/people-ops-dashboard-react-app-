@@ -1,8 +1,27 @@
-import { useMemo, useState } from 'react'
+import { FormEvent, useMemo, useState } from 'react'
+
+import type { EmployeeFormInput } from '../../types/employee'
 
 import './employees-add-form.scss'
 
-const initialFormState = {
+interface EmployeesAddFormProps {
+  onAdd: (payload: EmployeeFormInput) => void | Promise<void>
+  departments?: string[]
+}
+
+interface FormState {
+  name: string
+  role: string
+  department: string
+  location: string
+  salary: string
+  impactScore: number | string
+  remote: boolean
+  rise: boolean
+  hiredAt: string
+}
+
+const initialFormState: FormState = {
   name: '',
   role: '',
   department: '',
@@ -14,25 +33,28 @@ const initialFormState = {
   hiredAt: new Date().toISOString().slice(0, 10)
 }
 
-const EmployeesAddForm = ({ onAdd, departments = [] }) => {
-  const [formValues, setFormValues] = useState(initialFormState)
-  const [showAdvanced, setShowAdvanced] = useState(false)
+const EmployeesAddForm = ({ onAdd, departments = [] }: EmployeesAddFormProps) => {
+  const [formValues, setFormValues] = useState<FormState>(initialFormState)
+  const [showAdvanced, setShowAdvanced] = useState<boolean>(false)
 
-  const departmentOptions = useMemo(() => {
+  const departmentOptions = useMemo<string[]>(() => {
     const preset = ['People Ops', 'Engineering', 'Design', 'Growth', 'Marketing']
     const filtered = departments.filter((dept) => dept && dept !== 'all')
     return Array.from(new Set([...filtered, ...preset]))
   }, [departments])
 
-  const handleChange = (field) => (event) => {
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value
-    setFormValues((prev) => ({
-      ...prev,
-      [field]: value
-    }))
-  }
+  const handleChange =
+    (field: keyof FormState) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const target = event.target
+      const value =
+        target instanceof HTMLInputElement && target.type === 'checkbox' ? target.checked : target.value
+      setFormValues((prev) => ({
+        ...prev,
+        [field]: value
+      }))
+    }
 
-  const handleToggle = (field) => () => {
+  const handleToggle = (field: 'remote' | 'rise') => () => {
     setFormValues((prev) => ({
       ...prev,
       [field]: !prev[field]
@@ -49,23 +71,24 @@ const EmployeesAddForm = ({ onAdd, departments = [] }) => {
     setShowAdvanced(false)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const nameValid = formValues.name.trim().length >= 3
     const roleValid = formValues.role.trim().length >= 2
-    const salaryValid = Number(formValues.salary) > 0
+    const salaryValue = Number(formValues.salary)
+    const salaryValid = salaryValue > 0
 
     if (!nameValid || !roleValid || !salaryValid) {
       return
     }
 
-    onAdd({
+    await onAdd({
       name: formValues.name.trim(),
       role: formValues.role.trim(),
       department: formValues.department.trim() || 'Unassigned',
       location: formValues.location.trim() || 'Remote',
-      salary: Number(formValues.salary),
+      salary: salaryValue,
       impactScore: Number(formValues.impactScore) || 75,
       remote: formValues.remote,
       rise: formValues.rise,
